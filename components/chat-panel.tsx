@@ -12,6 +12,7 @@ import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
 import { UserMessage } from './stocks/message'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export interface ChatPanelProps {
   id?: string
@@ -50,10 +51,10 @@ export function ChatPanel({
 
   return (
     <div className="fixed inset-x-0 bg-white/90 bottom-0 w-full duration-300 ease-in-out peer-[[data-state=open]]:group-[]:lg:pl-[250px] peer-[[data-state=open]]:group-[]:xl:pl-[300px] dark:from-10%">
-      {/* <ButtonScrollToBottom
+      <ButtonScrollToBottom
         isAtBottom={isAtBottom}
         scrollToBottom={scrollToBottom}
-      /> */}
+      />
 
       <div className="mx-auto sm:max-w-2xl sm:px-4">
         <div className="mb-4 grid sm:grid-cols-2 gap-2 sm:gap-4 px-4 sm:px-0">
@@ -74,14 +75,32 @@ export function ChatPanel({
                     }
                   ])
 
-                  const responseMessage = await submitUserMessage(
-                    example.message
-                  )
+                  try {
+                    const responseMessage = await submitUserMessage(
+                      example.message
+                    )
 
-                  setMessages(currentMessages => [
-                    ...currentMessages,
-                    responseMessage
-                  ])
+                    setMessages(currentMessages => [
+                      ...currentMessages,
+                      responseMessage
+                    ])
+                  } catch {
+                    toast(
+                      <div className="text-red-600">
+                        You have reached your message limit! Please try again
+                        later, or{' '}
+                        <a
+                          className="underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href="https://vercel.com/templates/next.js/gemini-ai-chatbot"
+                        >
+                          deploy your own version
+                        </a>
+                        .
+                      </div>
+                    )
+                  }
                 }}
               >
                 <div className="font-medium">{example.heading}</div>
